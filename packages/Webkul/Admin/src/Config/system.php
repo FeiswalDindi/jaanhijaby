@@ -2869,10 +2869,10 @@ return [
                 'title'         => 'Environment',
                 'type'          => 'select',
                 'validation'    => 'required',
-                'default'       => true,
+                'default'       => '1',
                 'options'       => [
-                    ['title' => 'Sandbox', 'value' => true],
-                    ['title' => 'Live', 'value' => false],
+                    ['title' => 'Sandbox', 'value' => '1'],
+                    ['title' => 'Live', 'value' => '0'],
                 ],
             ], [
                 'name'          => 'BusinessShortCode',

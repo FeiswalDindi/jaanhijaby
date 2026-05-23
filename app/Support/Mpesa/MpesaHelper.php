@@ -23,10 +23,10 @@ class MpesaHelper extends BaseMpesaHelper
 
     public function __construct()
     {
-        $sandbox = $this->configValue('sandbox');
-        $environment = $this->configValue('environment');
+        $sandbox = $this->adminConfigValue('sandbox') ?? $this->configValue('sandbox');
+        $environment = $this->adminConfigValue('environment') ?? $this->configValue('environment');
 
-        $this->env = $environment === 'live' || $sandbox === false || $sandbox === '0' ? 'live' : 'sandbox';
+        $this->env = $environment === 'live' || $this->isFalse($sandbox) ? 'live' : 'sandbox';
         $this->shortcode = $this->configValue('BusinessShortCode', 'shortcode', 'business_shortcode');
         $this->consumerKey = $this->configValue('consumer_key');
         $this->consumerSecret = $this->configValue('consumer_secret');
@@ -161,18 +161,16 @@ class MpesaHelper extends BaseMpesaHelper
     private function configValue(string ...$keys): mixed
     {
         foreach ($keys as $key) {
-            $value = Config::get("mpesa.{$key}");
+            $value = $this->adminConfigValue($key);
 
             if ($value !== null && $value !== '') {
                 return $value;
             }
 
-            if (function_exists('core')) {
-                $value = core()->getConfigData("sales.payment_methods.mpesa.{$key}");
+            $value = Config::get("mpesa.{$key}");
 
-                if ($value !== null && $value !== '') {
-                    return $value;
-                }
+            if ($value !== null && $value !== '') {
+                return $value;
             }
 
             foreach ($this->envKeys($key) as $envKey) {
@@ -185,6 +183,17 @@ class MpesaHelper extends BaseMpesaHelper
         }
 
         return null;
+    }
+
+    private function adminConfigValue(string $key): mixed
+    {
+        if (! function_exists('core')) {
+            return null;
+        }
+
+        $value = core()->getConfigData("sales.payment_methods.mpesa.{$key}");
+
+        return $value !== '' ? $value : null;
     }
 
     private function envKeys(string $key): array
@@ -219,7 +228,10 @@ class MpesaHelper extends BaseMpesaHelper
 
     private function callbackUrl(): string
     {
-        return $this->configValue('callback_url') ?: url('/mpesa/callback');
+        return Config::get('mpesa.callback_url')
+            ?: env('MPESA_CALLBACK_URL')
+            ?: $this->adminConfigValue('callback_url')
+            ?: url('/mpesa/callback');
     }
 
     private function baseUrl(): string
@@ -236,5 +248,10 @@ class MpesaHelper extends BaseMpesaHelper
             ?? $response->json('fault.faultstring')
             ?? $response->body()
             ?? 'Unknown error';
+    }
+
+    private function isFalse(mixed $value): bool
+    {
+        return in_array($value, [false, 0, '0', 'false', 'live'], true);
     }
 }
