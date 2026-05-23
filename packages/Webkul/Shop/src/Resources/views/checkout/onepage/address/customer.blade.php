@@ -79,10 +79,6 @@
                                     <div class="flex items-center justify-between">
                                         <p class="text-base font-medium">
                                             @{{ address.first_name + ' ' + address.last_name }}
-
-                                            <template v-if="address.company_name">
-                                                (@{{ address.company_name }})
-                                            </template>
                                         </p>
                                     </div>
 
@@ -92,8 +88,7 @@
                                         </template>
 
                                         @{{ address.city }},
-                                        @{{ address.state }}, @{{ address.country }},
-                                        @{{ address.postcode }}
+                                        @{{ address.state }}
                                     </p>
                                 </label>
                             </div>
@@ -199,10 +194,6 @@
                                             <div class="flex items-center justify-between">
                                                 <p class="text-base font-medium">
                                                     @{{ address.first_name + ' ' + address.last_name }}
-
-                                                    <template v-if="address.company_name">
-                                                        (@{{ address.company_name }})
-                                                    </template>
                                                 </p>
                                             </div>
 
@@ -212,8 +203,7 @@
                                                 </template>
 
                                                 @{{ address.city }},
-                                                @{{ address.state }}, @{{ address.country }},
-                                                @{{ address.postcode }}
+                                                @{{ address.state }}
                                             </p>
                                         </label>
                                     </div>

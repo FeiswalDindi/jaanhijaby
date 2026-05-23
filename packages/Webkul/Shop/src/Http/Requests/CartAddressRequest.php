@@ -41,6 +41,31 @@ class CartAddressRequest extends FormRequest
     }
 
     /**
+     * Normalize checkout addresses for the Kenya storefront.
+     */
+    protected function prepareForValidation(): void
+    {
+        $data = $this->all();
+
+        foreach (['billing', 'shipping'] as $addressType) {
+            if (empty($data[$addressType]) || ! is_array($data[$addressType])) {
+                continue;
+            }
+
+            $data[$addressType]['country'] = 'KE';
+            $data[$addressType]['postcode'] = $data[$addressType]['postcode'] ?? '00100';
+            $data[$addressType]['city'] = $data[$addressType]['city'] ?? 'Kenya';
+            $data[$addressType]['company_name'] = null;
+
+            if ($addressType === 'billing') {
+                $data[$addressType]['vat_id'] = null;
+            }
+        }
+
+        $this->replace($data);
+    }
+
+    /**
      * Merge new address rules.
      */
     private function mergeAddressRules(string $addressType): void
@@ -50,8 +75,8 @@ class CartAddressRequest extends FormRequest
             "{$addressType}.first_name" => ['required'],
             "{$addressType}.last_name" => ['required'],
             "{$addressType}.email" => ['required'],
-            "{$addressType}.address" => ['required', 'array', 'min:1'],
-            "{$addressType}.city" => ['required'],
+            "{$addressType}.address" => ['nullable', 'array'],
+            "{$addressType}.city" => ['nullable'],
             "{$addressType}.country" => core()->isCountryRequired() ? ['required'] : ['nullable'],
             "{$addressType}.state" => core()->isStateRequired() ? ['required'] : ['nullable'],
             "{$addressType}.postcode" => core()->isPostCodeRequired() ? ['required', new PostCode] : [new PostCode],
