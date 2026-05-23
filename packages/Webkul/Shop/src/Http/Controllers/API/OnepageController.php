@@ -191,14 +191,20 @@ class OnepageController extends APIController
     /**
      * Message for blocked shipping options.
      */
-    private function shippingBlockedMessage(string $method): string
-    {
-        if ($method === 'free_free') {
-            return 'Clear the Preferred Package Drop Location field first to select Free Shipping.';
-        }
-
-        return 'Enter a Preferred Package Drop Location first to select Flat Rate Shipping.';
+private function shippingBlockedMessage(string $method): string
+{
+    if ($method === 'free_free') {
+        return "⚠️ To use Free Shipping:\n"
+            . "Clear the Preferred Package Drop Location field.\n"
+            . "⚠️⚠️ RELOAD THE PAGE afterwards."
+  ;
     }
+
+    return "⚠️ To use Flat Rate Shipping:\n\n"
+        . "Enter a Preferred Package Drop Location.\n"
+        . " ⚠️⚠️RELOAD THE PAGE afterwards."
+;
+}
 
     /**
      * Store payment method.
