@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "281c441d9c5a983947de5cc04b1cfc7d",
+    "content-hash": "935dc252d2da8481e5ea62f29a66b77b",
     "packages": [
         {
             "name": "astrotomic/laravel-translatable",
@@ -284,6 +284,53 @@
                 }
             ],
             "time": "2026-02-10T14:33:43+00:00"
+        },
+        {
+            "name": "brunoadul/mpesa",
+            "version": "v1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/BrunoAdul/bagisto-mpesa.git",
+                "reference": "6c051124ad0f107a834685c7540185799d98e1f8"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/BrunoAdul/bagisto-mpesa/zipball/6c051124ad0f107a834685c7540185799d98e1f8",
+                "reference": "6c051124ad0f107a834685c7540185799d98e1f8",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^8.1"
+            },
+            "type": "bagisto-package",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Bruno\\Mpesa\\Providers\\MpesaServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Bruno\\Mpesa\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Bruno",
+                    "email": "brunoadul@gmail.com"
+                }
+            ],
+            "description": "Mpesa payment integration for Bagisto",
+            "support": {
+                "issues": "https://github.com/BrunoAdul/bagisto-mpesa/issues",
+                "source": "https://github.com/BrunoAdul/bagisto-mpesa/tree/v1.0.0"
+            },
+            "time": "2025-03-27T20:58:49+00:00"
         },
         {
             "name": "carbonphp/carbon-doctrine-types",
