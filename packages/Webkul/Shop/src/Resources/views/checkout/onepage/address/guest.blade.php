@@ -39,28 +39,7 @@
                         :address="cart.billing_address || undefined"
                     ></v-checkout-address-form>
 
-                    <!-- Use for Shipping Checkbox -->
-                    <x-shop::form.control-group
-                        class="!mb-0 flex items-center gap-2.5"
-                        v-if="cart.have_stockable_items"
-                    >
-                        <x-shop::form.control-group.control
-                            type="checkbox"
-                            name="billing.use_for_shipping"
-                            id="use_for_shipping"
-                            for="use_for_shipping"
-                            value="1"
-                            @change="useBillingAddressForShipping = ! useBillingAddressForShipping"
-                            ::checked="!! useBillingAddressForShipping"
-                        />
-
-                        <label
-                            class="cursor-pointer select-none text-base text-zinc-500 max-md:text-sm max-sm:text-xs ltr:pl-0 rtl:pr-0"
-                            for="use_for_shipping"
-                        >
-                            @lang('shop::app.checkout.onepage.address.same-as-billing')
-                        </label>
-                    </x-shop::form.control-group>
+                    <input type="hidden" name="billing.use_for_shipping" value="1">
 
                     {!! view_render_event('bagisto.shop.checkout.onepage.address.guest.billing.after') !!}
                 </div>
@@ -120,16 +99,14 @@
             },
 
             created() {
-                if (this.cart.billing_address) {
-                    this.useBillingAddressForShipping = this.cart.billing_address.use_for_shipping;
-                }
+                this.useBillingAddressForShipping = true;
             },
 
             methods: {
                 addAddress(params, { setErrors }) {
                     this.isStoring = true;
 
-                    params['billing']['use_for_shipping'] = this.useBillingAddressForShipping;
+                    params['billing']['use_for_shipping'] = true;
 
                     this.moveToNextStep();
 

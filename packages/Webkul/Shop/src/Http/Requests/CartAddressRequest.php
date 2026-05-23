@@ -55,7 +55,12 @@ class CartAddressRequest extends FormRequest
             $data[$addressType]['country'] = 'KE';
             $data[$addressType]['postcode'] = $data[$addressType]['postcode'] ?? '00100';
             $data[$addressType]['city'] = $data[$addressType]['city'] ?? 'Kenya';
+            $data[$addressType]['address'] = $data[$addressType]['address'] ?? [''];
             $data[$addressType]['company_name'] = null;
+
+            if ($addressType === 'billing') {
+                $data[$addressType]['use_for_shipping'] = true;
+            }
 
             if ($addressType === 'billing') {
                 $data[$addressType]['vat_id'] = null;

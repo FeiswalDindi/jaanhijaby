@@ -74,6 +74,17 @@ class OnepageController extends APIController
                 ]);
             }
 
+            $hasPreferredDropLocation = $this->hasPreferredDropLocation($cart);
+            $defaultShippingMethod = $hasPreferredDropLocation ? 'flatrate_flatrate' : 'free_free';
+
+            if ($this->hasShippingRate($rates, $defaultShippingMethod)) {
+                Cart::saveShippingMethod($defaultShippingMethod);
+
+                Cart::collectTotals();
+            }
+
+            $rates = $this->markShippingAvailability($rates, $hasPreferredDropLocation);
+
             return new JsonResource([
                 'redirect' => false,
                 'data' => $rates,
@@ -97,6 +108,14 @@ class OnepageController extends APIController
             'shipping_method' => 'required',
         ]);
 
+        $hasPreferredDropLocation = $this->hasPreferredDropLocation(Cart::getCart());
+
+        if ($this->isBlockedShippingMethod($validatedData['shipping_method'], $hasPreferredDropLocation)) {
+            return response()->json([
+                'message' => $this->shippingBlockedMessage($validatedData['shipping_method']),
+            ], Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
         if (
             Cart::hasError()
             || ! $validatedData['shipping_method']
@@ -110,6 +129,75 @@ class OnepageController extends APIController
         Cart::collectTotals();
 
         return response()->json(Payment::getSupportedPaymentMethods());
+    }
+
+    /**
+     * Check whether the selected shipping address has a preferred drop location.
+     */
+    private function hasPreferredDropLocation($cart): bool
+    {
+        if (! $cart?->shipping_address?->address) {
+            return false;
+        }
+
+        return trim((string) $cart->shipping_address->address) !== '';
+    }
+
+    /**
+     * Check for a shipping rate in the collectRates response.
+     */
+    private function hasShippingRate(array $rates, string $method): bool
+    {
+        foreach ($rates['shippingMethods'] ?? [] as $shippingMethod) {
+            foreach ($shippingMethod['rates'] ?? [] as $rate) {
+                if ($rate->method === $method) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Flag unavailable shipping methods and mark the automatic default for the frontend.
+     */
+    private function markShippingAvailability(array $rates, bool $hasPreferredDropLocation): array
+    {
+        $selectedMethod = $hasPreferredDropLocation ? 'flatrate_flatrate' : 'free_free';
+
+        foreach ($rates['shippingMethods'] ?? [] as &$shippingMethod) {
+            foreach ($shippingMethod['rates'] ?? [] as $rate) {
+                $rate->is_selected = $rate->method === $selectedMethod;
+                $rate->is_disabled = $this->isBlockedShippingMethod($rate->method, $hasPreferredDropLocation);
+                $rate->disabled_message = $rate->is_disabled
+                    ? $this->shippingBlockedMessage($rate->method)
+                    : null;
+            }
+        }
+
+        return $rates;
+    }
+
+    /**
+     * Determine whether a shipping method conflicts with the drop-location rule.
+     */
+    private function isBlockedShippingMethod(string $method, bool $hasPreferredDropLocation): bool
+    {
+        return ($hasPreferredDropLocation && $method === 'free_free')
+            || (! $hasPreferredDropLocation && $method === 'flatrate_flatrate');
+    }
+
+    /**
+     * Message for blocked shipping options.
+     */
+    private function shippingBlockedMessage(string $method): string
+    {
+        if ($method === 'free_free') {
+            return 'Clear the Preferred Package Drop Location field first to select Free Shipping.';
+        }
+
+        return 'Enter a Preferred Package Drop Location first to select Flat Rate Shipping.';
     }
 
     /**

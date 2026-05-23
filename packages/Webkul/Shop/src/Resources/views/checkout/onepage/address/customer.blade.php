@@ -119,26 +119,7 @@
 
                         <!-- Shipping Address Block if have stockable items -->
                         <template v-if="cart.have_stockable_items">
-                            <!-- Use for Shipping Checkbox -->
-                            <x-shop::form.control-group class="!mb-0 mt-5 flex items-center gap-2.5">
-                                <x-shop::form.control-group.control
-                                    type="checkbox"
-                                    name="billing.use_for_shipping"
-                                    id="use_for_shipping"
-                                    for="use_for_shipping"
-                                    value="1"
-                                    @change="useBillingAddressForShipping = ! useBillingAddressForShipping"
-                                    ::checked="!! useBillingAddressForShipping"
-                                />
-
-                                <label
-                                    class="cursor-pointer select-none text-base text-zinc-500 max-md:text-sm max-sm:text-xs ltr:pl-0 rtl:pr-0"
-                                    for="use_for_shipping"
-                                >
-                                    @lang('shop::app.checkout.onepage.address.same-as-billing')
-                                </label>
-                            </x-shop::form.control-group>
-
+                            <input type="hidden" name="billing.use_for_shipping" value="1">
 
                             <!-- Customer Shipping Address -->
                             <div
@@ -354,9 +335,7 @@
             },
 
             created() {
-                if (this.cart.billing_address) {
-                    this.useBillingAddressForShipping = this.cart.billing_address.use_for_shipping;
-                }
+                this.useBillingAddressForShipping = true;
             },
 
             mounted() {
@@ -545,7 +524,7 @@
                     let payload = {
                         billing: {
                             ...this.getSelectedAddress('billing', params.billing.id),
-                            use_for_shipping: this.useBillingAddressForShipping
+                            use_for_shipping: true
                         },
                     };
 

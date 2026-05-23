@@ -42,6 +42,7 @@
 
                                 <div
                                     class="relative max-w-[218px] select-none max-md:max-w-full max-md:flex-auto"
+                                    :class="{'opacity-60': rate.is_disabled}"
                                     v-for="rate in method.rates"
                                 >
                                     <input 
@@ -49,6 +50,8 @@
                                         name="shipping_method"
                                         :id="rate.method"
                                         :value="rate.method"
+                                        :checked="rate.is_selected"
+                                        :disabled="rate.is_disabled"
                                         class="peer hidden"
                                         @change="store(rate.method)"
                                     >
@@ -56,12 +59,14 @@
                                     <label 
                                         class="icon-radio-unselect peer-checked:icon-radio-select absolute top-5 cursor-pointer text-2xl text-navyBlue ltr:right-5 rtl:left-5"
                                         :for="rate.method"
+                                        @click="guardRateSelection($event, rate)"
                                     >
                                     </label>
 
                                     <label 
                                         class="block cursor-pointer rounded-xl border border-zinc-200 p-5 max-sm:flex max-sm:gap-4 max-sm:rounded-lg max-sm:px-4 max-sm:py-2.5"
                                         :for="rate.method"
+                                        @click="guardRateSelection($event, rate)"
                                     >
                                         <span class="icon-flate-rate text-6xl text-navyBlue max-sm:text-5xl"></span>
 
@@ -100,7 +105,29 @@
 
             emits: ['processing', 'processed'],
 
+            data() {
+                return {
+                    warningMessage: null,
+                };
+            },
+
             methods: {
+                guardRateSelection(event, rate) {
+                    if (! rate.is_disabled) {
+                        return;
+                    }
+
+                    event.preventDefault();
+                    event.stopPropagation();
+
+                    this.warningMessage = rate.disabled_message || 'This shipping option is unavailable for the current address.';
+
+                    this.$emitter.emit('add-flash', {
+                        type: 'warning',
+                        message: this.warningMessage,
+                    });
+                },
+
                 store(selectedMethod) {
                     this.$emit('processing', 'payment');
 
@@ -116,6 +143,15 @@
                         })
                         .catch(error => {
                             this.$emit('processing', 'shipping');
+
+                            if (error.response.status === 422) {
+                                this.$emitter.emit('add-flash', {
+                                    type: 'warning',
+                                    message: error.response.data.message,
+                                });
+
+                                return;
+                            }
 
                             if (error.response.data.redirect_url) {
                                 window.location.href = error.response.data.redirect_url;
