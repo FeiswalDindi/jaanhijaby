@@ -41,6 +41,7 @@ class ShopServiceProvider extends ServiceProvider
         $router->aliasMiddleware('cache.response', CacheResponse::class);
         $router->aliasMiddleware('customer', AuthenticateCustomer::class);
 
+        // Load the main routes
         Route::middleware(['web', 'shop', PreventRequestsDuringMaintenance::class])->group(__DIR__.'/../Routes/web.php');
         Route::middleware(['web', 'shop', PreventRequestsDuringMaintenance::class])->group(__DIR__.'/../Routes/api.php');
 

@@ -2838,4 +2838,76 @@ return [
             ],
         ],
     ],
+
+    [
+        'key'    => 'sales.payment_methods.mpesa',
+        'name'   => 'M-Pesa (Lipa na M-Pesa)',
+        'sort'   => 5,
+        'fields' => [
+            [
+                'name'          => 'title',
+                'title'         => 'admin::app.configuration.index.sales.payment-methods.title',
+                'type'          => 'text',
+                'validation'    => 'required',
+                'channel_based' => false,
+                'locale_based'  => true,
+            ], [
+                'name'          => 'description',
+                'title'         => 'admin::app.configuration.index.sales.payment-methods.description',
+                'type'          => 'textarea',
+                'channel_based' => false,
+                'locale_based'  => true,
+            ], [
+                'name'          => 'active',
+                'title'         => 'admin::app.configuration.index.sales.payment-methods.status',
+                'type'          => 'boolean',
+                'validation'    => 'required',
+                'channel_based' => false,
+                'locale_based'  => true,
+            ], [
+                'name'          => 'sandbox',
+                'title'         => 'Environment',
+                'type'          => 'select',
+                'validation'    => 'required',
+                'default'       => true,
+                'options'       => [
+                    ['title' => 'Sandbox', 'value' => true],
+                    ['title' => 'Live', 'value' => false],
+                ],
+            ], [
+                'name'          => 'BusinessShortCode',
+                'title'         => 'Business Shortcode',
+                'type'          => 'text',
+                'validation'    => 'required',
+            ], [
+                'name'          => 'passkey',
+                'title'         => 'Passkey',
+                'type'          => 'password',
+                'validation'    => 'required',
+            ], [
+                'name'          => 'consumer_key',
+                'title'         => 'Consumer Key',
+                'type'          => 'text',
+                'validation'    => 'required',
+            ], [
+                'name'          => 'consumer_secret',
+                'title'         => 'Consumer Secret',
+                'type'          => 'password',
+                'validation'    => 'required',
+            ], [
+                'name'          => 'InitiatorName',
+                'title'         => 'Initiator Name',
+                'type'          => 'text',
+            ], [
+                'name'          => 'initiator_password',
+                'title'         => 'Initiator Password',
+                'type'          => 'password',
+            ], [
+                'name'          => 'callback_url',
+                'title'         => 'Callback URL',
+                'type'          => 'text',
+            ],
+        ]
+    ],
+
 ];
