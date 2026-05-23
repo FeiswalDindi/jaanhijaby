@@ -45,7 +45,7 @@
                                     :class="{'opacity-60': rate.is_disabled}"
                                     v-for="rate in method.rates"
                                 >
-                                    <input 
+                                    <input
                                         type="radio"
                                         name="shipping_method"
                                         :id="rate.method"
@@ -56,14 +56,14 @@
                                         @change="store(rate.method)"
                                     >
 
-                                    <label 
+                                    <label
                                         class="icon-radio-unselect peer-checked:icon-radio-select absolute top-5 cursor-pointer text-2xl text-navyBlue ltr:right-5 rtl:left-5"
                                         :for="rate.method"
                                         @click="guardRateSelection($event, rate)"
                                     >
                                     </label>
 
-                                    <label 
+                                    <label
                                         class="block cursor-pointer rounded-xl border border-zinc-200 p-5 max-sm:flex max-sm:gap-4 max-sm:rounded-lg max-sm:px-4 max-sm:py-2.5"
                                         :for="rate.method"
                                         @click="guardRateSelection($event, rate)"
@@ -74,7 +74,7 @@
                                             <p class="mt-1.5 text-2xl font-semibold max-md:text-base">
                                                 @{{ rate.base_formatted_price }}
                                             </p>
-                                            
+
                                             <p class="mt-2.5 text-xs font-medium max-md:mt-1 max-sm:mt-0 max-sm:font-normal max-sm:text-zinc-500">
                                                 <span class="font-medium">@{{ rate.method_title }}</span> - @{{ rate.method_description }}
                                             </p>
@@ -84,6 +84,16 @@
 
                                 {!! view_render_event('bagisto.shop.checkout.onepage.shipping_method.after') !!}
                             </template>
+                        </div>
+
+<div class="mt-8 flex justify-end">
+                            <button
+                                type="button"
+                                class="primary-button w-max rounded-2xl bg-navyBlue px-11 py-3 text-white max-md:w-full"
+                                @click="manualProceed"
+                            >
+                                Proceed to Payment
+                            </button>
                         </div>
                     </x-slot>
                 </x-shop::accordion>
@@ -112,6 +122,29 @@
             },
 
             methods: {
+
+
+// Add this new function
+                manualProceed() {
+                    // 1. Try to find if any rate is already selected
+                    let selected = null;
+                    Object.values(this.methods).forEach(method => {
+                        let rate = method.rates.find(r => r.is_selected);
+                        if (rate) selected = rate.method;
+                    });
+
+                    // 2. If a rate is selected, store it.
+                    // If your rules block everything, you can force a fallback string here:
+                    if (selected) {
+                        this.store(selected);
+                    } else {
+                        this.$emitter.emit('add-flash', {
+                            type: 'warning',
+                            message: 'Please select a valid shipping method.'
+                        });
+                    }
+                },
+
                 guardRateSelection(event, rate) {
                     if (! rate.is_disabled) {
                         return;
@@ -131,7 +164,7 @@
                 store(selectedMethod) {
                     this.$emit('processing', 'payment');
 
-                    this.$axios.post("{{ route('shop.checkout.onepage.shipping_methods.store') }}", {    
+                    this.$axios.post("{{ route('shop.checkout.onepage.shipping_methods.store') }}", {
                             shipping_method: selectedMethod,
                         })
                         .then(response => {
