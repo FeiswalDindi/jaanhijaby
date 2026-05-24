@@ -94,7 +94,7 @@
 
                 setTimeout(function() {
                     self.remove()
-                }, 8000)
+                }, 9500)
             },
 
             methods: {

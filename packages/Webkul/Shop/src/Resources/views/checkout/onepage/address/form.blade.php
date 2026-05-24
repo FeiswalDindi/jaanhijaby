@@ -83,7 +83,7 @@
             <!-- Preferred Package Drop Location -->
             <x-shop::form.control-group>
                 <x-shop::form.control-group.label class="!mt-0">
-                    Preferred Package Drop Location
+                    Package Pick Location <br>(⚠️NOTE: Leave Blank when picking on shop)
                 </x-shop::form.control-group.label>
 
                 <x-shop::form.control-group.control
@@ -92,7 +92,7 @@
                     ::value="address.address[0]"
                     rules="address"
                     label="Preferred Package Drop Location"
-                    placeholder="Paste a Google Maps pin/link or describe the exact drop point"
+                    placeholder="Google Maps link or describe Location"
                 />
 
                 <x-shop::form.control-group.error
